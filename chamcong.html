@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Chấm Công</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 90%;
+            max-width: 1200px;
+            min-height: 600px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .login-title {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .dashboard {
+            padding: 20px;
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            padding: 8px 20px;
+            font-size: 14px;
+            width: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .attendance-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .time-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .attendance-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .check-in-btn {
+            background: #28a745;
+        }
+
+        .check-out-btn {
+            background: #dc3545;
+        }
+
+        .status-display {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .status-in {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-out {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .records-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .records-title {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .records-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .records-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .records-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: #f8f9fa;
+            border: 2px solid #e1e1e1;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: auto;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .employee-form {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .add-employee-btn {
+            background: #28a745;
+            width: auto;
+            padding: 10px 20px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .demo-info {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .salary-period-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                margin: 10px;
+            }
+            
+            .attendance-btns {
+                flex-direction: column;
+            }
+            
+            .time-display {
+                font-size: 2em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .records-table {
+                font-size: 12px;
+            }
+            
+            .records-table th,
+            .records-table td {
+                padding: 8px 4px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection" class="login-container">
+            <div class="logo">⏰</div>
+            <h2 class="login-title">Hệ Thống Chấm Công</h2>
+            
+            <div class="demo-info">
+                <strong>⚠️ Lưu ý:</strong> localStorage không hoạt động trong môi trường Claude.ai. 
+                Để lưu trữ dữ liệu, vui lòng copy code này và chạy trên web server thực tế.<br><br>
+                <strong>Demo Account:</strong><br>
+                Admin: admin/admin (Quản lý toàn bộ hệ thống)<br>
+                User: user1/123456 (50,000₫/h), user2/123456 (45,000₫/h)
+            </div>
+
+            <div class="form-group">
+                <label>Tên đăng nhập:</label>
+                <input type="text" id="username" placeholder="Nhập tên đăng nhập">
+            </div>
+            
+            <div class="form-group">
+                <label>Mật khẩu:</label>
+                <input type="password" id="password" placeholder="Nhập mật khẩu">
+            </div>
+            
+            <button class="btn" onclick="login()">Đăng Nhập</button>
+        </div>
+
+        <!-- User Dashboard -->
+        <div id="userDashboard" class="dashboard">
+            <div class="header">
+                <h1>Chấm Công Nhân Viên</h1>
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar"></div>
+                    <div>
+                        <div id="userName" style="font-weight: bold;"></div>
+                        <div id="userRole" style="color: #666; font-size: 14px;"></div>
+                    </div>
+                    <button class="btn logout-btn" onclick="logout()">Đăng Xuất</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Hôm Nay</h3>
+                    <div class="number" id="todayHours">0h</div>
+                    <div>Giờ làm việc</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Tuần Này</h3>
+                    <div class="number" id="weekHours">0h</div>
+                    <div>Tổng giờ</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Tháng Này</h3>
+                    <div class="number" id="monthHours">0h</div>
+                    <div>Tổng giờ</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Lương Tháng Này</h3>
+                    <div class="number" id="monthSalary">0₫</div>
+                    <div>Ước tính</div>
+                </div>
+            </div>
+
+            <div class="attendance-section">
+                <div class="time-display" id="currentTime"></div>
+                <div id="attendanceStatus" class="status-display status-out">Chưa chấm công vào</div>
+                <div class="attendance-btns">
+                    <button class="btn check-in-btn" id="checkInBtn" onclick="checkIn()">Chấm Công Vào</button>
+                    <button class="btn check-out-btn" id="checkOutBtn" onclick="checkOut()" disabled>Chấm Công Ra</button>
+                </div>
+            </div>
+
+            <div class="records-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 class="records-title">Lịch Sử Chấm Công</h3>
+                    <button class="btn" style="background: #17a2b8; width: auto; padding: 8px 16px;" onclick="exportUserAttendanceExcel()">
+                        📊 Xuất Excel
+                    </button>
+                </div>
+                <table class="records-table">
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Giờ Vào</th>
+                            <th>Giờ Ra</th>
+                            <th>Tổng Giờ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userRecords">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="dashboard">
+            <div class="header">
+                <h1>Quản Trị Hệ Thống</h1>
+                <div class="user-info">
+                    <div class="avatar">A</div>
+                    <div>
+                        <div style="font-weight: bold;">Administrator</div>
+                        <div style="color: #666; font-size: 14px;">Quản trị viên</div>
+                    </div>
+                    <button class="btn logout-btn" onclick="logout()">Đăng Xuất</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Tổng Nhân Viên</h3>
+                    <div class="number" id="totalEmployees">0</div>
+                    <div>Người</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Đang Làm Việc</h3>
+                    <div class="number" id="activeEmployees">0</div>
+                    <div>Người</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Hôm Nay</h3>
+                    <div class="number" id="todayAttendance">0</div>
+                    <div>Lượt chấm công</div>
+                </div>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="showTab('employees')">Quản Lý Nhân Viên</button>
+                <button class="tab-btn" onclick="showTab('salary')">Quản Lý Lương</button>
+                <button class="tab-btn" onclick="showTab('attendance')">Báo Cáo Chấm Công</button>
+            </div>
+
+            <div id="employeesTab" class="tab-content active">
+                <div class="employee-form">
+                    <h3 style="margin-bottom: 15px;">Thêm Nhân Viên Mới</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tên nhân viên:</label>
+                            <input type="text" id="newEmployeeName" placeholder="Nhập tên">
+                        </div>
+                        <div class="form-group">
+                            <label>Tên đăng nhập:</label>
+                            <input type="text" id="newEmployeeUsername" placeholder="Nhập username">
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu:</label>
+                            <input type="password" id="newEmployeePassword" placeholder="Nhập mật khẩu">
+                        </div>
+                        <div class="form-group">
+                            <label>Chức vụ:</label>
+                            <input type="text" id="newEmployeePosition" placeholder="Chức vụ">
+                        </div>
+                        <div class="form-group">
+                            <label>Lương/giờ (VNĐ):</label>
+                            <input type="number" id="newEmployeeRate" placeholder="50000">
+                        </div>
+                    </div>
+                    <button class="btn add-employee-btn" onclick="addEmployee()">Thêm Nhân Viên</button>
+                </div>
+
+                <div class="records-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 class="records-title">Danh Sách Nhân Viên</h3>
+                        <button class="btn" style="background: #28a745; width: auto; padding: 8px 16px;" onclick="exportEmployeesExcel()">
+                            📊 Xuất Excel
+                        </button>
+                    </div>
+                    <table class="records-table">
+                        <thead>
+                            <tr>
+                                <th>Tên</th>
+                                <th>Username</th>
+                                <th>Chức Vụ</th>
+                                <th>Lương/Giờ</th>
+                                <th>Trạng Thái</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeesList">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="salaryTab" class="tab-content">
+                <div class="salary-period-info">
+                    <strong>📅 Chu kỳ tính lương:</strong> Từ ngày 25 tháng trước đến ngày 24 tháng sau<br>
+                    <strong>💰 Công thức:</strong> Tổng giờ làm việc × Lương/giờ = Lương tháng
+                </div>
+                
+                <div class="employee-form">
+                    <h3 style="margin-bottom: 15px;">Cập Nhật Lương Nhân Viên</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Chọn nhân viên:</label>
+                            <select id="salaryEmployeeSelect">
+                                <option value="">-- Chọn nhân viên --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Lương/giờ mới (VNĐ):</label>
+                            <input type="number" id="newSalaryRate" placeholder="50000">
+                        </div>
+                    </div>
+                    <button class="btn add-employee-btn" onclick="updateEmployeeSalary()">Cập Nhật Lương</button>
+                </div>
+
+                <div class="records-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 class="records-title">Bảng Lương Tháng</h3>
+                        <button class="btn" style="background: #28a745; width: auto; padding: 8px 16px;" onclick="exportSalaryExcel()">
+                            💰 Xuất Excel Lương
+                        </button>
+                    </div>
+                    <div class="form-row" style="margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label>Chọn tháng:</label>
+                            <input type="month" id="salaryReportMonth" onchange="updateSalaryReport()">
+                        </div>
+                    </div>
+                    <table class="records-table">
+                        <thead>
+                            <tr>
+                                <th>Nhân Viên</th>
+                                <th>Lương/Giờ</th>
+                                <th>Tổng Giờ</th>
+                                <th>Lương Cơ Bản</th>
+                                <th>Thưởng/Phạt</th>
+                                <th>Tổng Lương</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salaryReport">
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <h3>Tổng chi phí lương: <span id="totalSalaryCost">0₫</span></h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="attendanceTab" class="tab-content">
+                <div class="records-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 class="records-title">Báo Cáo Chấm Công Hôm Nay</h3>
+                        <div>
+                            <button class="btn" style="background: #17a2b8; width: auto; padding: 8px 16px; margin-right: 10px;" onclick="exportAttendanceExcel()">
+                                📋 Xuất Excel Hôm Nay
+                            </button>
+                            <button class="btn" style="background: #6f42c1; width: auto; padding: 8px 16px;" onclick="exportAllAttendanceExcel()">
+                                📊 Xuất Tất Cả
+                            </button>
+                        </div>
+                    </div>
+                    <table class="records-table">
+                        <thead>
+                            <tr>
+                                <th>Nhân Viên</th>
+                                <th>Giờ Vào</th>
+                                <th>Giờ Ra</th>
+                                <th>Tổng Giờ</th>
+                                <th>Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceReport">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Dữ liệu mẫu trong bộ nhớ
+        let users = {
+            'admin': {
+                username: 'admin',
+                password: 'admin',
+                name: 'Administrator',
+                role: 'admin',
+                position: 'Quản trị viên',
+                hourlyRate: 0
+            },
+            'user1': {
+                username: 'user1',
+                password: '123456',
+                name: 'Nguyễn Văn A',
+                role: 'user',
+                position: 'Nhân viên IT',
+                hourlyRate: 50000
+            },
+            'user2': {
+                username: 'user2',
+                password: '123456',
+                name: 'Trần Thị B',
+                role: 'user',
+                position: 'Nhân viên Marketing',
+                hourlyRate: 45000
+            }
+        };
+
+        let attendanceRecords = [];
+        let currentUser = null;
+
+        // Data persistence functions
+        function saveData() {
+            try {
+                localStorage.setItem('attendanceSystem_users', JSON.stringify(users));
+                localStorage.setItem('attendanceSystem_records', JSON.stringify(attendanceRecords));
+            } catch (error) {
+                console.warn('localStorage not available in this environment');
+            }
+        }
+
+        function loadData() {
+            try {
+                const savedUsers = localStorage.getItem('attendanceSystem_users');
+                const savedRecords = localStorage.getItem('attendanceSystem_records');
+                
+                if (savedUsers) {
+                    users = { ...users, ...JSON.parse(savedUsers) };
+                }
+                
+                if (savedRecords) {
+                    attendanceRecords = JSON.parse(savedRecords);
+                }
+            } catch (error) {
+                console.warn('localStorage not available, using default data');
+            }
+        }
+
+        // Khởi tạo
+        function init() {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // Load saved data
+            loadData();
+            
+            // Thêm một số dữ liệu mẫu nếu chưa có
+            if (attendanceRecords.length === 0) {
+                addSampleData();
+            }
+            
+            // Enter key support
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && document.getElementById('loginSection').style.display !== 'none') {
+                    login();
+                }
+            });
+        }
+
+        function addSampleData() {
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            // Thêm dữ liệu chấm công mẫu
+            attendanceRecords.push({
+                username: 'user1',
+                date: formatDate(yesterday),
+                checkIn: '08:30',
+                checkOut: '17:45',
+                totalHours: 9.25
+            });
+            
+            attendanceRecords.push({
+                username: 'user2',
+                date: formatDate(yesterday),
+                checkIn: '09:00',
+                checkOut: '18:00',
+                totalHours: 9.0
+            });
+        }
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN');
+            const element = document.getElementById('currentTime');
+            if (element) {
+                element.textContent = timeString;
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                alert('Vui lòng nhập đầy đủ thông tin!');
+                return;
+            }
+
+            const user = users[username];
+            if (user && user.password === password) {
+                currentUser = user;
+                document.getElementById('loginSection').style.display = 'none';
+                
+                if (user.role === 'admin') {
+                    showAdminDashboard();
+                } else {
+                    showUserDashboard();
+                }
+                
+                // Clear login form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            } else {
+                alert('Tên đăng nhập hoặc mật khẩu không chính xác!');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('userDashboard').classList.remove('active');
+            document.getElementById('adminDashboard').classList.remove('active');
+        }
+
+        function showUserDashboard() {
+            document.getElementById('userDashboard').classList.add('active');
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.position;
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+            
+            updateUserStats();
+            updateUserRecords();
+            updateAttendanceStatus();
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('adminDashboard').classList.add('active');
+            updateAdminStats();
+            updateEmployeesList();
+            updateAttendanceReport();
+            updateSalaryEmployeeSelect();
+            
+            // Set default salary report month
+            const salaryReportMonth = document.getElementById('salaryReportMonth');
+            if (!salaryReportMonth.value) {
+                salaryReportMonth.value = formatDateToMonth(new Date());
+            }
+            updateSalaryReport();
+        }
+
+        function updateUserStats() {
+            const today = formatDate(new Date());
+            const userRecords = attendanceRecords.filter(r => r.username === currentUser.username);
+            
+            // Tính giờ hôm nay
+            const todayRecord = userRecords.find(r => r.date === today);
+            document.getElementById('todayHours').textContent = 
+                todayRecord ? todayRecord.totalHours + 'h' : '0h';
+            
+            // Tính giờ tuần này
+            const weekHours = userRecords
+                .filter(r => isThisWeek(new Date(r.date)))
+                .reduce((total, r) => total + (r.totalHours || 0), 0);
+            document.getElementById('weekHours').textContent = weekHours + 'h';
+            
+            // Tính giờ tháng này theo chu kỳ 25-25
+            const currentPeriod = getCurrentSalaryPeriod();
+            const monthHours = userRecords
+                .filter(r => {
+                    const recordDate = new Date(r.date);
+                    return recordDate >= currentPeriod.start && recordDate <= currentPeriod.end;
+                })
+                .reduce((total, r) => total + (r.totalHours || 0), 0);
+            document.getElementById('monthHours').textContent = monthHours + 'h';
+            
+            // Tính lương tháng này
+            const monthSalary = monthHours * (currentUser.hourlyRate || 0);
+            document.getElementById('monthSalary').textContent = formatCurrency(monthSalary);
+        }
+
+        function updateUserRecords() {
+            const tbody = document.getElementById('userRecords');
+            const userRecords = attendanceRecords
+                .filter(r => r.username === currentUser.username)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            tbody.innerHTML = userRecords.map(record => `
+                <tr>
+                    <td>${record.date}</td>
+                    <td>${record.checkIn || '-'}</td>
+                    <td>${record.checkOut || '-'}</td>
+                    <td>${record.totalHours ? record.totalHours + 'h' : '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateAttendanceStatus() {
+            const today = formatDate(new Date());
+            const todayRecord = attendanceRecords.find(r => 
+                r.username === currentUser.username && r.date === today
+            );
+            
+            const statusEl = document.getElementById('attendanceStatus');
+            const checkInBtn = document.getElementById('checkInBtn');
+            const checkOutBtn = document.getElementById('checkOutBtn');
+            
+            if (!todayRecord || !todayRecord.checkIn) {
+                statusEl.className = 'status-display status-out';
+                statusEl.textContent = 'Chưa chấm công vào';
+                checkInBtn.disabled = false;
+                checkOutBtn.disabled = true;
+            } else if (todayRecord.checkIn && !todayRecord.checkOut) {
+                statusEl.className = 'status-display status-in';
+                statusEl.textContent = `Đã vào lúc ${todayRecord.checkIn}`;
+                checkInBtn.disabled = true;
+                checkOutBtn.disabled = false;
+            } else {
+                statusEl.className = 'status-display status-out';
+                statusEl.textContent = `Đã ra lúc ${todayRecord.checkOut}`;
+                checkInBtn.disabled = true;
+                checkOutBtn.disabled = true;
+            }
+        }
+
+        function checkIn() {
+            const now = new Date();
+            const today = formatDate(now);
+            const time = now.toTimeString().slice(0, 5);
+            
+            let record = attendanceRecords.find(r => 
+                r.username === currentUser.username && r.date === today
+            );
+            
+            if (!record) {
+                record = {
+                    username: currentUser.username,
+                    date: today,
+                    checkIn: time,
+                    checkOut: null,
+                    totalHours: 0
+                };
+                attendanceRecords.push(record);
+            } else {
+                record.checkIn = time;
+            }
+            
+            saveData(); // Save data after change
+            
+            updateUserStats();
+            updateUserRecords();
+            updateAttendanceStatus();
+            updateAdminStats();
+            updateAttendanceReport();
+            
+            alert(`Chấm công vào thành công lúc ${time}!`);
+        }
+
+        function checkOut() {
+            const now = new Date();
+            const today = formatDate(now);
+            const time = now.toTimeString().slice(0, 5);
+            
+            const record = attendanceRecords.find(r => 
+                r.username === currentUser.username && r.date === today
+            );
+            
+            if (record && record.checkIn) {
+                record.checkOut = time;
+                
+                // Tính tổng giờ
+                const checkInTime = new Date(`${today} ${record.checkIn}`);
+                const checkOutTime = new Date(`${today} ${time}`);
+                const diffHours = (checkOutTime - checkInTime) / (1000 * 60 * 60);
+                record.totalHours = Math.round(diffHours * 100) / 100;
+                
+                saveData(); // Save data after change
+                
+                updateUserStats();
+                updateUserRecords();
+                updateAttendanceStatus();
+                updateAdminStats();
+                updateAttendanceReport();
+                
+                alert(`Chấm công ra thành công lúc ${time}!\nTổng giờ làm: ${record.totalHours}h`);
+            }
+        }
+
+        function updateAdminStats() {
+            const totalEmployees = Object.keys(users).filter(u => users[u].role === 'user').length;
+            document.getElementById('totalEmployees').textContent = totalEmployees;
+            
+            const today = formatDate(new Date());
+            const todayRecords = attendanceRecords.filter(r => r.date === today);
+            const activeEmployees = todayRecords.filter(r => r.checkIn && !r.checkOut).length;
+            document.getElementById('activeEmployees').textContent = activeEmployees;
+            
+            const todayAttendance = todayRecords.length;
+            document.getElementById('todayAttendance').textContent = todayAttendance;
+        }
+
+        function updateEmployeesList() {
+            const tbody = document.getElementById('employeesList');
+            const employees = Object.values(users).filter(u => u.role === 'user');
+            
+            tbody.innerHTML = employees.map(emp => {
+                const today = formatDate(new Date());
+                const todayRecord = attendanceRecords.find(r => 
+                    r.username === emp.username && r.date === today
+                );
+                
+                let status = 'Chưa vào';
+                if (todayRecord) {
+                    if (todayRecord.checkIn && todayRecord.checkOut) {
+                        status = 'Đã ra';
+                    } else if (todayRecord.checkIn) {
+                        status = 'Đang làm';
+                    }
+                }
+                
+                return `
+                    <tr>
+                        <td>${emp.name}</td>
+                        <td>${emp.username}</td>
+                        <td>${emp.position}</td>
+                        <td>${formatCurrency(emp.hourlyRate || 0)}/h</td>
+                        <td>${status}</td>
+                        <td>
+                            <button class="delete-btn" onclick="deleteEmployee('${emp.username}')">
+                                Xóa
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateAttendanceReport() {
+            const tbody = document.getElementById('attendanceReport');
+            const today = formatDate(new Date());
+            const todayRecords = attendanceRecords.filter(r => r.date === today);
+            
+            tbody.innerHTML = todayRecords.map(record => {
+                const user = users[record.username];
+                let status = 'Chưa ra';
+                if (record.checkOut) {
+                    status = 'Hoàn thành';
+                } else if (record.checkIn) {
+                    status = 'Đang làm';
+                }
+                
+                return `
+                    <tr>
+                        <td>${user ? user.name : record.username}</td>
+                        <td>${record.checkIn || '-'}</td>
+                        <td>${record.checkOut || '-'}</td>
+                        <td>${record.totalHours ? record.totalHours + 'h' : '-'}</td>
+                        <td>${status}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        function addEmployee() {
+            const name = document.getElementById('newEmployeeName').value;
+            const username = document.getElementById('newEmployeeUsername').value;
+            const password = document.getElementById('newEmployeePassword').value;
+            const position = document.getElementById('newEmployeePosition').value;
+            const hourlyRate = parseInt(document.getElementById('newEmployeeRate').value) || 0;
+            
+            if (!name || !username || !password || !position) {
+                alert('Vui lòng nhập đầy đủ thông tin!');
+                return;
+            }
+            
+            if (users[username]) {
+                alert('Tên đăng nhập đã tồn tại!');
+                return;
+            }
+            
+            users[username] = {
+                username: username,
+                password: password,
+                name: name,
+                role: 'user',
+                position: position,
+                hourlyRate: hourlyRate
+            };
+            
+            saveData(); // Save data after change
+            
+            // Clear form
+            document.getElementById('newEmployeeName').value = '';
+            document.getElementById('newEmployeeUsername').value = '';
+            document.getElementById('newEmployeePassword').value = '';
+            document.getElementById('newEmployeePosition').value = '';
+            document.getElementById('newEmployeeRate').value = '';
+            
+            updateEmployeesList();
+            updateAdminStats();
+            updateSalaryEmployeeSelect();
+            alert('Thêm nhân viên thành công!');
+        }
+
+        function deleteEmployee(username) {
+            if (confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) {
+                delete users[username];
+                
+                // Xóa các bản ghi chấm công liên quan
+                attendanceRecords = attendanceRecords.filter(r => r.username !== username);
+                
+                saveData(); // Save data after change
+                
+                updateEmployeesList();
+                updateAdminStats();
+                updateAttendanceReport();
+                alert('Xóa nhân viên thành công!');
+            }
+        }
+
+        // Salary Management Functions
+        function updateSalaryEmployeeSelect() {
+            const select = document.getElementById('salaryEmployeeSelect');
+            const employees = Object.values(users).filter(u => u.role === 'user');
+            
+            select.innerHTML = '<option value="">-- Chọn nhân viên --</option>' +
+                employees.map(emp => 
+                    `<option value="${emp.username}">${emp.name} (${formatCurrency(emp.hourlyRate || 0)}/h)</option>`
+                ).join('');
+        }
+
+        function updateEmployeeSalary() {
+            const username = document.getElementById('salaryEmployeeSelect').value;
+            const newRate = parseInt(document.getElementById('newSalaryRate').value);
+            
+            if (!username || !newRate) {
+                alert('Vui lòng chọn nhân viên và nhập lương mới!');
+                return;
+            }
+            
+            if (users[username]) {
+                users[username].hourlyRate = newRate;
+                saveData(); // Save data after change
+                
+                updateEmployeesList();
+                updateSalaryEmployeeSelect();
+                updateSalaryReport();
+                alert(`Đã cập nhật lương cho ${users[username].name}: ${formatCurrency(newRate)}/giờ`);
+                
+                // Clear form
+                document.getElementById('salaryEmployeeSelect').value = '';
+                document.getElementById('newSalaryRate').value = '';
+            }
+        }
+
+        function updateSalaryReport() {
+            const monthInput = document.getElementById('salaryReportMonth');
+            if (!monthInput.value) {
+                monthInput.value = formatDateToMonth(new Date());
+            }
+            
+            const [year, month] = monthInput.value.split('-');
+            const period = getSalaryPeriod(parseInt(year), parseInt(month));
+            
+            const tbody = document.getElementById('salaryReport');
+            const employees = Object.values(users).filter(u => u.role === 'user');
+            let totalCost = 0;
+            
+            tbody.innerHTML = employees.map(emp => {
+                const employeeRecords = attendanceRecords.filter(r => 
+                    r.username === emp.username &&
+                    new Date(r.date) >= period.start &&
+                    new Date(r.date) <= period.end
+                );
+                
+                const totalHours = employeeRecords.reduce((total, r) => total + (r.totalHours || 0), 0);
+                const basicSalary = totalHours * (emp.hourlyRate || 0);
+                const bonus = 0; // Có thể mở rộng thêm tính năng thưởng phạt
+                const totalSalary = basicSalary + bonus;
+                
+                totalCost += totalSalary;
+                
+                return `
+                    <tr>
+                        <td>${emp.name}</td>
+                        <td>${formatCurrency(emp.hourlyRate || 0)}</td>
+                        <td>${totalHours.toFixed(1)}h</td>
+                        <td>${formatCurrency(basicSalary)}</td>
+                        <td>${formatCurrency(bonus)}</td>
+                        <td><strong>${formatCurrency(totalSalary)}</strong></td>
+                    </tr>
+                `;
+            }).join('');
+            
+            document.getElementById('totalSalaryCost').textContent = formatCurrency(totalCost);
+        }
+
+        function getCurrentSalaryPeriod() {
+            const now = new Date();
+            return getSalaryPeriod(now.getFullYear(), now.getMonth() + 1);
+        }
+
+        function getSalaryPeriod(year, month) {
+            const startDate = new Date(year, month - 1, 25);
+            if (startDate > new Date()) {
+                startDate.setMonth(startDate.getMonth() - 1);
+            }
+            
+            const endDate = new Date(startDate);
+            endDate.setMonth(endDate.getMonth() + 1);
+            endDate.setDate(24);
+            
+            return {
+                start: startDate,
+                end: endDate
+            };
+        }
+
+        // Excel Export Functions
+        function exportEmployeesExcel() {
+            const employees = Object.values(users).filter(u => u.role === 'user');
+            
+            try {
+                const wsData = [
+                    ['STT', 'Tên Nhân Viên', 'Username', 'Chức Vụ', 'Lương/Giờ (VNĐ)', 'Trạng Thái'],
+                    ...employees.map((emp, index) => {
+                        const today = formatDate(new Date());
+                        const todayRecord = attendanceRecords.find(r => 
+                            r.username === emp.username && r.date === today
+                        );
+                        
+                        let status = 'Chưa vào';
+                        if (todayRecord) {
+                            if (todayRecord.checkIn && todayRecord.checkOut) {
+                                status = 'Đã ra';
+                            } else if (todayRecord.checkIn) {
+                                status = 'Đang làm';
+                            }
+                        }
+                        
+                        return [
+                            index + 1,
+                            emp.name,
+                            emp.username,
+                            emp.position,
+                            emp.hourlyRate || 0,
+                            status
+                        ];
+                    })
+                ];
+                
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+                
+                // Set column widths
+                ws['!cols'] = [
+                    { width: 5 }, { width: 20 }, { width: 15 }, 
+                    { width: 20 }, { width: 15 }, { width: 12 }
+                ];
+                
+                XLSX.utils.book_append_sheet(wb, ws, 'Danh Sách Nhân Viên');
+                XLSX.writeFile(wb, `Danh_Sach_Nhan_Vien_${formatDate(new Date())}.xlsx`);
+                alert('Đã xuất danh sách nhân viên thành công!');
+            } catch (error) {
+                console.error('Lỗi xuất Excel:', error);
+                alert('Có lỗi khi xuất file Excel: ' + error.message);
+            }
+        }
+
+        function exportAttendanceExcel() {
+            const today = formatDate(new Date());
+            const todayRecords = attendanceRecords.filter(r => r.date === today);
+            
+            try {
+                const wsData = [
+                    ['STT', 'Nhân Viên', 'Ngày', 'Giờ Vào', 'Giờ Ra', 'Tổng Giờ', 'Lương/Giờ', 'Thành Tiền'],
+                    ...todayRecords.map((record, index) => {
+                        const user = users[record.username];
+                        const amount = (record.totalHours || 0) * (user?.hourlyRate || 0);
+                        
+                        return [
+                            index + 1,
+                            user ? user.name : record.username,
+                            record.date,
+                            record.checkIn || '',
+                            record.checkOut || '',
+                            record.totalHours || 0,
+                            user?.hourlyRate || 0,
+                            amount
+                        ];
+                    })
+                ];
+                
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+                
+                // Set column widths
+                ws['!cols'] = [
+                    { width: 5 }, { width: 20 }, { width: 12 }, 
+                    { width: 10 }, { width: 10 }, { width: 10 },
+                    { width: 15 }, { width: 15 }
+                ];
+                
+                XLSX.utils.book_append_sheet(wb, ws, 'Chấm Công Hôm Nay');
+                XLSX.writeFile(wb, `Cham_Cong_${today}.xlsx`);
+                alert('Đã xuất báo cáo chấm công hôm nay thành công!');
+            } catch (error) {
+                console.error('Lỗi xuất Excel:', error);
+                alert('Có lỗi khi xuất file Excel: ' + error.message);
+            }
+        }
+
+        function exportAllAttendanceExcel() {
+            const employees = Object.values(users).filter(u => u.role === 'user');
+            
+            try {
+                const wb = XLSX.utils.book_new();
+                
+                // Create summary sheet
+                const summaryData = [
+                    ['STT', 'Nhân Viên', 'Username', 'Chức Vụ', 'Lương/Giờ', 'Tổng Giờ Làm', 'Tổng Lương'],
+                    ...employees.map((emp, index) => {
+                        const empRecords = attendanceRecords.filter(r => r.username === emp.username);
+                        const totalHours = empRecords.reduce((sum, r) => sum + (r.totalHours || 0), 0);
+                        const totalSalary = totalHours * (emp.hourlyRate || 0);
+                        
+                        return [
+                            index + 1,
+                            emp.name,
+                            emp.username,
+                            emp.position,
+                            emp.hourlyRate || 0,
+                            parseFloat(totalHours.toFixed(2)),
+                            totalSalary
+                        ];
+                    })
+                ];
+                
+                const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+                summaryWs['!cols'] = [
+                    { width: 5 }, { width: 20 }, { width: 15 }, 
+                    { width: 20 }, { width: 15 }, { width: 12 }, { width: 15 }
+                ];
+                XLSX.utils.book_append_sheet(wb, summaryWs, 'Tổng Hợp');
+                
+                // Create individual sheets for each employee
+                employees.forEach(emp => {
+                    const empRecords = attendanceRecords
+                        .filter(r => r.username === emp.username)
+                        .sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    const empData = [
+                        ['STT', 'Ngày', 'Giờ Vào', 'Giờ Ra', 'Tổng Giờ', 'Thành Tiền'],
+                        ...empRecords.map((record, index) => [
+                            index + 1,
+                            record.date,
+                            record.checkIn || '',
+                            record.checkOut || '',
+                            record.totalHours || 0,
+                            (record.totalHours || 0) * (emp.hourlyRate || 0)
+                        ])
+                    ];
+                    
+                    const empWs = XLSX.utils.aoa_to_sheet(empData);
+                    empWs['!cols'] = [
+                        { width: 5 }, { width: 12 }, { width: 10 }, 
+                        { width: 10 }, { width: 10 }, { width: 15 }
+                    ];
+                    
+                    // Sanitize sheet name (remove special characters and limit length)
+                    const sheetName = emp.name.replace(/[^a-zA-Z0-9\u00C0-\u017F\u1EA0-\u1EF9 ]/g, '').substring(0, 25);
+                    XLSX.utils.book_append_sheet(wb, empWs, sheetName || `NV_${emp.username}`);
+                });
+                
+                XLSX.writeFile(wb, `Bao_Cao_Cham_Cong_Tong_Hop_${formatDate(new Date())}.xlsx`);
+                alert('Đã xuất báo cáo tổng hợp thành công!');
+            } catch (error) {
+                console.error('Lỗi xuất Excel:', error);
+                alert('Có lỗi khi xuất file Excel: ' + error.message);
+            }
+        }
+
+        function exportSalaryExcel() {
+            const monthInput = document.getElementById('salaryReportMonth');
+            const [year, month] = monthInput.value.split('-');
+            const period = getSalaryPeriod(parseInt(year), parseInt(month));
+            
+            const employees = Object.values(users).filter(u => u.role === 'user');
+            let totalCost = 0;
+            
+            try {
+                const wsData = [
+                    ['STT', 'Nhân Viên', 'Username', 'Chức Vụ', 'Lương/Giờ', 'Tổng Giờ', 'Lương Cơ Bản', 'Thưởng/Phạt', 'Tổng Lương'],
+                    ...employees.map((emp, index) => {
+                        const employeeRecords = attendanceRecords.filter(r => 
+                            r.username === emp.username &&
+                            new Date(r.date) >= period.start &&
+                            new Date(r.date) <= period.end
+                        );
+                        
+                        const totalHours = employeeRecords.reduce((total, r) => total + (r.totalHours || 0), 0);
+                        const basicSalary = totalHours * (emp.hourlyRate || 0);
+                        const bonus = 0;
+                        const totalSalary = basicSalary + bonus;
+                        
+                        totalCost += totalSalary;
+                        
+                        return [
+                            index + 1,
+                            emp.name,
+                            emp.username,
+                            emp.position,
+                            emp.hourlyRate || 0,
+                            parseFloat(totalHours.toFixed(1)),
+                            basicSalary,
+                            bonus,
+                            totalSalary
+                        ];
+                    })
+                ];
+                
+                // Add total row
+                wsData.push([
+                    '', '', '', '', '', '', '', 'TỔNG:', totalCost
+                ]);
+                
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+                
+                // Set column widths
+                ws['!cols'] = [
+                    { width: 5 }, { width: 20 }, { width: 15 }, { width: 20 }, 
+                    { width: 15 }, { width: 10 }, { width: 15 }, { width: 12 }, { width: 15 }
+                ];
+                
+                XLSX.utils.book_append_sheet(wb, ws, `Bảng Lương ${month}-${year}`);
+                XLSX.writeFile(wb, `Bang_Luong_${month}_${year}.xlsx`);
+                alert('Đã xuất file Excel lương thành công!');
+            } catch (error) {
+                console.error('Lỗi xuất Excel:', error);
+                alert('Có lỗi khi xuất file Excel: ' + error.message);
+            }
+        }
+
+        function exportUserAttendanceExcel() {
+            const userRecords = attendanceRecords
+                .filter(r => r.username === currentUser.username)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            try {
+                const wsData = [
+                    ['STT', 'Ngày', 'Giờ Vào', 'Giờ Ra', 'Tổng Giờ', 'Lương/Giờ', 'Thành Tiền'],
+                    ...userRecords.map((record, index) => [
+                        index + 1,
+                        record.date,
+                        record.checkIn || '',
+                        record.checkOut || '',
+                        record.totalHours || 0,
+                        currentUser.hourlyRate || 0,
+                        (record.totalHours || 0) * (currentUser.hourlyRate || 0)
+                    ])
+                ];
+                
+                // Add summary
+                const totalHours = userRecords.reduce((sum, r) => sum + (r.totalHours || 0), 0);
+                const totalSalary = totalHours * (currentUser.hourlyRate || 0);
+                
+                wsData.push([]);
+                wsData.push(['', 'TỔNG KẾT:', '', '', parseFloat(totalHours.toFixed(1)), '', totalSalary]);
+                
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+                
+                // Set column widths
+                ws['!cols'] = [
+                    { width: 5 }, { width: 12 }, { width: 10 }, 
+                    { width: 10 }, { width: 10 }, { width: 15 }, { width: 15 }
+                ];
+                
+                XLSX.utils.book_append_sheet(wb, ws, 'Lịch Sử Chấm Công');
+                XLSX.writeFile(wb, `Lich_Su_Cham_Cong_${currentUser.username}_${formatDate(new Date())}.xlsx`);
+                alert('Đã xuất lịch sử chấm công cá nhân thành công!');
+            } catch (error) {
+                console.error('Lỗi xuất Excel:', error);
+                alert('Có lỗi khi xuất file Excel: ' + error.message);
+            }
+        }
+
+        // Utility functions
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function isThisWeek(date) {
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            
+            return date >= weekStart && date <= weekEnd;
+        }
+
+        function isThisMonth(date) {
+            const now = new Date();
+            return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+
+        function formatDateToMonth(date) {
+            return date.toISOString().slice(0, 7);
+        }
+
+        // Khởi tạo ứng dụng
+        init();
+    </script>
+</body>
+</html>
