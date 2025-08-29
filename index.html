@@ -36,7 +36,7 @@
     <div id="loadingScreen" class="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
         <div class="text-center">
             <div class="spinner mx-auto mb-4"></div>
-            <p class="text-gray-600">Đang tải dữ liệu từ server...</p>
+            <p class="text-gray-600">Đang kết nối cloud database...</p>
         </div>
     </div>
 
@@ -53,7 +53,7 @@
                 <p class="text-gray-600">Hệ Thống Chấm Công</p>
                 
                 <div id="loginSyncStatus" class="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-green-100 text-green-700">
-                    <span>Đã đồng bộ</span>
+                    <span>☁️ Đã kết nối</span>
                 </div>
             </div>
             
@@ -65,6 +65,7 @@
                         id="username"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                         placeholder="Nhập tên đăng nhập"
+                        autocomplete="username"
                     />
                 </div>
                 
@@ -75,6 +76,7 @@
                         id="password"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                         placeholder="Nhập mật khẩu"
+                        autocomplete="current-password"
                     />
                 </div>
                 
@@ -86,10 +88,11 @@
                 </button>
                 
                 <div class="text-sm text-gray-500 text-center mt-4">
-                    <p><strong>Demo accounts:</strong></p>
+                    <p><strong>☁️ Cloud Database:</strong></p>
                     <p>Admin: admin / admin</p>
                     <p>NV: nhanvien1 / 123</p>
-                    <p class="mt-2 text-xs text-blue-600">💾 Dữ liệu được lưu trên server</p>
+                    <p class="mt-2 text-xs text-blue-600">🌍 Tất cả thiết bị trong quán đều thấy dữ liệu</p>
+                    <p class="text-xs text-green-600">⚡ Đồng bộ thời gian thực</p>
                 </div>
             </div>
         </div>
@@ -115,7 +118,7 @@
                     
                     <div class="flex items-center gap-4">
                         <div id="mainSyncStatus" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-green-100 text-green-700">
-                            <span>Đã đồng bộ</span>
+                            <span>☁️ Đang đồng bộ</span>
                         </div>
                         
                         <div class="text-right">
@@ -175,7 +178,10 @@
                     
                     <div class="mt-4 p-3 bg-gray-50 rounded-lg">
                         <p class="text-sm text-gray-600">
-                            💡 <strong>Hệ thống ca làm việc:</strong> Mỗi lần "Vào Ca Mới" tạo một ca riêng biệt. "Kết Thúc Ca" để hoàn thành ca hiện tại. Tính lương chính xác theo thời gian thực.
+                            💡 <strong>Hệ thống ca làm việc:</strong> Mỗi lần "Vào Ca Mới" tạo một ca riêng biệt. Admin có thể chỉnh sửa giờ làm từng ca.
+                        </p>
+                        <p class="text-xs text-blue-600 mt-2">
+                            ☁️ Dữ liệu tự động đồng bộ cloud - tất cả thiết bị trong quán đều thấy cập nhật thời gian thực!
                         </p>
                     </div>
                 </div>
@@ -255,7 +261,7 @@
 
                         <div id="historyList" class="space-y-3 max-h-96 overflow-y-auto">
                             <div class="text-center py-8 text-gray-500">
-                                Không có dữ liệu chấm công trong tháng này
+                                Đang tải dữ liệu...
                             </div>
                         </div>
                     </div>
@@ -304,12 +310,14 @@
                             </div>
                         </div>
                         
-                        <button
-                            id="exportButton"
-                            class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
-                        >
-                            Xuất Excel
-                        </button>
+                        <div class="flex gap-2">
+                            <button
+                                id="exportButton"
+                                class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                            >
+                                Xuất Excel
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -335,7 +343,71 @@
         </div>
     </div>
 
+    <!-- Employee Detail Modal -->
+    <div id="employeeDetailModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-800" id="modalEmployeeName">Chi Tiết Chấm Công</h3>
+                    <button onclick="closeEmployeeDetail()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-4 flex gap-4 items-center">
+                    <h4 class="text-lg font-medium text-gray-800">Tháng:</h4>
+                    <select id="modalMonthSelect" class="px-3 py-2 border border-gray-300 rounded-lg">
+                        <option value="1">Tháng 1</option>
+                        <option value="2">Tháng 2</option>
+                        <option value="3">Tháng 3</option>
+                        <option value="4">Tháng 4</option>
+                        <option value="5">Tháng 5</option>
+                        <option value="6">Tháng 6</option>
+                        <option value="7">Tháng 7</option>
+                        <option value="8">Tháng 8</option>
+                        <option value="9">Tháng 9</option>
+                        <option value="10">Tháng 10</option>
+                        <option value="11">Tháng 11</option>
+                        <option value="12">Tháng 12</option>
+                    </select>
+                    <select id="modalYearSelect" class="px-3 py-2 border border-gray-300 rounded-lg">
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <button onclick="loadEmployeeDetail()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                        Tải Dữ Liệu
+                    </button>
+                </div>
+
+                <div id="employeeDetailContent" class="space-y-4">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ================================
+        // ⚠️ THAY ĐỔI CONFIG NÀY ĐỂ KẾT NỐI DATABASE THẬT
+        // ================================
+        
+        // 🔥 BƯỚC 1: Tạo tài khoản Supabase tại https://supabase.com
+        // 🔥 BƯỚC 2: Tạo project mới
+        // 🔥 BƯỚC 3: Copy URL và API Key vào đây
+        
+        const SUPABASE_URL = 'https://your-project.supabase.co'; // ← Thay bằng URL thực của bạn
+        const SUPABASE_KEY = 'your-anon-public-key'; // ← Thay bằng API key thực của bạn
+        
+        // 🔥 BƯỚC 4: Vào Supabase SQL Editor và chạy script tạo bảng (xem hướng dẫn cuối file)
+        
+        // ================================
+        // MAIN APPLICATION CODE
+        // ================================
+
         // Global variables
         let currentUser = null;
         let employees = [];
@@ -345,62 +417,182 @@
         let selectedMonth = new Date().getMonth() + 1;
         let selectedYear = new Date().getFullYear();
         let editingEmployee = null;
+        let currentDetailEmployeeId = null;
+        let eventListenersAdded = false;
+        let syncInterval = null;
 
-        // Mock API với lương theo giờ
-        const mockAPI = {
-            delay: (ms = 500) => new Promise(resolve => setTimeout(resolve, ms)),
-            
-            db: {
+        // Cloud Database API
+        const cloudAPI = {
+            // Check if database is configured
+            isConfigured() {
+                return SUPABASE_URL !== 'https://your-project.supabase.co' && 
+                       SUPABASE_KEY !== 'your-anon-public-key';
+            },
+
+            // Make API calls to Supabase
+            async apiCall(endpoint, method = 'GET', data = null) {
+                if (!this.isConfigured()) {
+                    // Fallback to demo data if not configured
+                    return this.getDemoData(endpoint, method, data);
+                }
+
+                const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+                
+                try {
+                    const config = {
+                        method,
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': method === 'POST' ? 'return=representation' : undefined
+                        }
+                    };
+
+                    if (data && method !== 'GET') {
+                        config.body = JSON.stringify(data);
+                    }
+
+                    const response = await fetch(url, config);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const result = method === 'DELETE' ? null : await response.json();
+                    
+                    return { 
+                        success: true, 
+                        data: result 
+                    };
+                    
+                } catch (error) {
+                    console.error('API Error:', error);
+                    return { 
+                        success: false, 
+                        error: error.message 
+                    };
+                }
+            },
+
+            // Demo data fallback (when database not configured)
+            demoData: {
                 employees: [
-                    { id: 1, name: 'Nguyễn Văn A', username: 'admin', password: 'admin', role: 'admin', hourlyRate: 100000 },
-                    { id: 2, name: 'Trần Thị B', username: 'nhanvien1', password: '123', role: 'employee', hourlyRate: 50000 },
-                    { id: 3, name: 'Lê Văn C', username: 'nhanvien2', password: '123', role: 'employee', hourlyRate: 45000 }
+                    { id: 1, name: 'Nguyễn Văn A', username: 'admin', password: 'admin', role: 'admin', hourly_rate: 100000 },
+                    { id: 2, name: 'Trần Thị B', username: 'nhanvien1', password: '123', role: 'employee', hourly_rate: 50000 },
+                    { id: 3, name: 'Lê Văn C', username: 'nhanvien2', password: '123', role: 'employee', hourly_rate: 45000 }
                 ],
                 attendanceRecords: []
             },
 
+            getDemoData(endpoint, method, data) {
+                // Simulate network delay
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        if (endpoint === 'employees' && method === 'GET') {
+                            resolve({ success: true, data: this.demoData.employees });
+                        } else if (endpoint === 'attendance_records' && method === 'GET') {
+                            resolve({ success: true, data: this.demoData.attendanceRecords });
+                        } else if (endpoint === 'attendance_records' && method === 'POST') {
+                            const newRecord = { ...data, id: Date.now() + Math.random() };
+                            this.demoData.attendanceRecords.push(newRecord);
+                            resolve({ success: true, data: newRecord });
+                        } else if (endpoint.startsWith('attendance_records?id=eq.') && method === 'PATCH') {
+                            const id = parseFloat(endpoint.split('=')[1]);
+                            const index = this.demoData.attendanceRecords.findIndex(r => r.id === id);
+                            if (index !== -1) {
+                                this.demoData.attendanceRecords[index] = { ...this.demoData.attendanceRecords[index], ...data };
+                                resolve({ success: true, data: this.demoData.attendanceRecords[index] });
+                            } else {
+                                resolve({ success: false });
+                            }
+                        } else if (endpoint.startsWith('attendance_records?id=eq.') && method === 'DELETE') {
+                            const id = parseFloat(endpoint.split('=')[1]);
+                            this.demoData.attendanceRecords = this.demoData.attendanceRecords.filter(r => r.id !== id);
+                            resolve({ success: true });
+                        } else if (endpoint.startsWith('employees?id=eq.') && method === 'PATCH') {
+                            const id = parseInt(endpoint.split('=')[1]);
+                            const index = this.demoData.employees.findIndex(e => e.id === id);
+                            if (index !== -1) {
+                                this.demoData.employees[index] = { ...this.demoData.employees[index], ...data };
+                                resolve({ success: true, data: this.demoData.employees[index] });
+                            } else {
+                                resolve({ success: false });
+                            }
+                        } else {
+                            resolve({ success: false, error: 'Endpoint not found' });
+                        }
+                    }, 300);
+                });
+            },
+
+            // API Methods
             async getEmployees() {
-                await this.delay();
-                return { success: true, data: this.db.employees };
+                return await this.apiCall('employees');
             },
 
             async getAttendanceRecords() {
-                await this.delay();
-                return { success: true, data: this.db.attendanceRecords };
+                return await this.apiCall('attendance_records');
             },
 
             async updateEmployee(id, data) {
-                await this.delay();
-                const index = this.db.employees.findIndex(emp => emp.id === id);
-                if (index !== -1) {
-                    this.db.employees[index] = { ...this.db.employees[index], ...data };
-                    return { success: true, data: this.db.employees[index] };
-                }
-                return { success: false, error: 'Employee not found' };
-            },
-
-            async deleteEmployee(id) {
-                await this.delay();
-                this.db.employees = this.db.employees.filter(emp => emp.id !== id);
-                this.db.attendanceRecords = this.db.attendanceRecords.filter(record => record.employeeId !== id);
-                return { success: true };
+                return await this.apiCall(`employees?id=eq.${id}`, 'PATCH', data);
             },
 
             async addAttendanceRecord(record) {
-                await this.delay();
-                const newRecord = { ...record, id: Date.now() };
-                this.db.attendanceRecords.push(newRecord);
-                return { success: true, data: newRecord };
+                return await this.apiCall('attendance_records', 'POST', record);
             },
 
             async updateAttendanceRecord(id, data) {
-                await this.delay();
-                const index = this.db.attendanceRecords.findIndex(record => record.id === id);
-                if (index !== -1) {
-                    this.db.attendanceRecords[index] = { ...this.db.attendanceRecords[index], ...data };
-                    return { success: true, data: this.db.attendanceRecords[index] };
+                return await this.apiCall(`attendance_records?id=eq.${id}`, 'PATCH', data);
+            },
+
+            async deleteAttendanceRecord(id) {
+                return await this.apiCall(`attendance_records?id=eq.${id}`, 'DELETE');
+            },
+
+            // Real-time sync
+            startRealTimeSync() {
+                if (syncInterval) clearInterval(syncInterval);
+                
+                syncInterval = setInterval(async () => {
+                    if (currentUser && syncStatus !== 'syncing') {
+                        try {
+                            const [employeesResponse, recordsResponse] = await Promise.all([
+                                this.getEmployees(),
+                                this.getAttendanceRecords()
+                            ]);
+
+                            if (employeesResponse.success && recordsResponse.success) {
+                                // Update global data
+                                employees = employeesResponse.data;
+                                attendanceRecords = recordsResponse.data;
+
+                                // Update UI
+                                if (currentUser.role === 'employee') {
+                                    updateEmployeeStatus();
+                                    renderHistory();
+                                    updateEmployeeSalaryInfo();
+                                } else if (currentUser.role === 'admin') {
+                                    renderEmployeeTable();
+                                }
+
+                                updateSyncStatus('synced');
+                            }
+                        } catch (error) {
+                            console.error('Real-time sync failed:', error);
+                            updateSyncStatus('error');
+                            setTimeout(() => updateSyncStatus('synced'), 3000);
+                        }
+                    }
+                }, 10000); // Sync every 10 seconds
+            },
+
+            stopRealTimeSync() {
+                if (syncInterval) {
+                    clearInterval(syncInterval);
+                    syncInterval = null;
                 }
-                return { success: false, error: 'Record not found' };
             }
         };
 
@@ -417,13 +609,15 @@
                     
                     if (status === 'synced') {
                         className += 'bg-green-100 text-green-700';
-                        content = '<span>Đã đồng bộ</span>';
+                        content = cloudAPI.isConfigured() ? 
+                            '<span>☁️ Đồng bộ cloud</span>' : 
+                            '<span>🔶 Demo mode</span>';
                     } else if (status === 'syncing') {
                         className += 'bg-yellow-100 text-yellow-700';
                         content = '<div class="spinner-small"></div><span>Đang đồng bộ...</span>';
                     } else if (status === 'error') {
                         className += 'bg-red-100 text-red-700';
-                        content = '<span>Lỗi kết nối</span>';
+                        content = '<span>❌ Lỗi kết nối</span>';
                     }
                     
                     element.className = className;
@@ -434,13 +628,20 @@
 
         function updateTime() {
             const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleTimeString('vi-VN');
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('vi-VN', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
+            const timeElement = document.getElementById('currentTime');
+            const dateElement = document.getElementById('currentDate');
+            
+            if (timeElement) {
+                timeElement.textContent = now.toLocaleTimeString('vi-VN');
+            }
+            if (dateElement) {
+                dateElement.textContent = now.toLocaleDateString('vi-VN', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
         }
 
         function calculateWorkingHours(checkIn, checkOut) {
@@ -448,14 +649,13 @@
             const start = new Date(checkIn);
             const end = new Date(checkOut);
             const hours = (end - start) / (1000 * 60 * 60);
-            // Tính chính xác theo phút, không làm tròn
             return hours;
         }
 
         function getMonthlyRecords(employeeId) {
             return attendanceRecords.filter(record => {
-                const recordDate = new Date(record.checkIn);
-                return record.employeeId === employeeId && 
+                const recordDate = new Date(record.check_in);
+                return record.employee_id === employeeId && 
                        recordDate.getMonth() + 1 === selectedMonth && 
                        recordDate.getFullYear() === selectedYear;
             });
@@ -464,24 +664,28 @@
         function calculateMonthlySalary(employee) {
             const monthlyRecords = getMonthlyRecords(employee.id);
             const totalHours = monthlyRecords.reduce((total, record) => {
-                return total + calculateWorkingHours(record.checkIn, record.checkOut);
+                return total + calculateWorkingHours(record.check_in, record.check_out);
             }, 0);
-            return Math.round(totalHours * employee.hourlyRate);
+            return Math.round(totalHours * employee.hourly_rate);
         }
 
         function updateEmployeeSalaryInfo() {
             if (currentUser && currentUser.role === 'employee') {
                 const monthlyRecords = getMonthlyRecords(currentUser.id);
                 const totalHours = monthlyRecords.reduce((total, record) => {
-                    return total + calculateWorkingHours(record.checkIn, record.checkOut);
+                    return total + calculateWorkingHours(record.check_in, record.check_out);
                 }, 0);
-                const totalSalary = totalHours * currentUser.hourlyRate;
+                const totalSalary = totalHours * currentUser.hourly_rate;
                 
-                // Update display elements
-                document.getElementById('currentMonthYear').textContent = `${selectedMonth}/${selectedYear}`;
-                document.getElementById('hourlyRateDisplay').textContent = currentUser.hourlyRate.toLocaleString('vi-VN') + ' ₫';
-                document.getElementById('totalHoursDisplay').textContent = totalHours.toFixed(1) + 'h';
-                document.getElementById('totalSalaryDisplay').textContent = Math.round(totalSalary).toLocaleString('vi-VN') + ' ₫';
+                const monthYearEl = document.getElementById('currentMonthYear');
+                const hourlyRateEl = document.getElementById('hourlyRateDisplay');
+                const totalHoursEl = document.getElementById('totalHoursDisplay');
+                const totalSalaryEl = document.getElementById('totalSalaryDisplay');
+                
+                if (monthYearEl) monthYearEl.textContent = `${selectedMonth}/${selectedYear}`;
+                if (hourlyRateEl) hourlyRateEl.textContent = currentUser.hourly_rate.toLocaleString('vi-VN') + ' ₫';
+                if (totalHoursEl) totalHoursEl.textContent = totalHours.toFixed(1) + 'h';
+                if (totalSalaryEl) totalSalaryEl.textContent = Math.round(totalSalary).toLocaleString('vi-VN') + ' ₫';
             }
         }
 
@@ -490,9 +694,14 @@
             try {
                 updateSyncStatus('syncing');
                 
+                // Show configuration warning if not set up
+                if (!cloudAPI.isConfigured()) {
+                    console.warn('⚠️ Database chưa được cấu hình. Đang chạy ở demo mode.');
+                }
+                
                 const [employeesResponse, recordsResponse] = await Promise.all([
-                    mockAPI.getEmployees(),
-                    mockAPI.getAttendanceRecords()
+                    cloudAPI.getEmployees(),
+                    cloudAPI.getAttendanceRecords()
                 ]);
 
                 if (employeesResponse.success) {
@@ -505,6 +714,7 @@
 
                 updateSyncStatus('synced');
                 showLoginScreen();
+                
             } catch (error) {
                 console.error('Failed to load data:', error);
                 updateSyncStatus('error');
@@ -516,19 +726,48 @@
             document.getElementById('loadingScreen').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             
+            // Add login event listeners
+            const loginBtn = document.getElementById('loginButton');
+            const passwordField = document.getElementById('password');
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', handleLogin);
+            }
+            
+            if (passwordField) {
+                passwordField.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        handleLogin();
+                    }
+                });
+            }
+            
             // Set current month/year
-            document.getElementById('monthSelect').value = selectedMonth;
-            document.getElementById('yearSelect').value = selectedYear;
-            document.getElementById('adminMonthSelect').value = selectedMonth;
-            document.getElementById('adminYearSelect').value = selectedYear;
+            const monthSelect = document.getElementById('monthSelect');
+            const yearSelect = document.getElementById('yearSelect');
+            const adminMonthSelect = document.getElementById('adminMonthSelect');
+            const adminYearSelect = document.getElementById('adminYearSelect');
+            
+            if (monthSelect) monthSelect.value = selectedMonth;
+            if (yearSelect) yearSelect.value = selectedYear;
+            if (adminMonthSelect) adminMonthSelect.value = selectedMonth;
+            if (adminYearSelect) adminYearSelect.value = selectedYear;
         }
 
         function showMainApp() {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
             
-            document.getElementById('currentUserName').textContent = currentUser.name;
-            document.getElementById('currentUserRole').textContent = currentUser.role;
+            const userNameEl = document.getElementById('currentUserName');
+            const userRoleEl = document.getElementById('currentUserRole');
+            
+            if (userNameEl) userNameEl.textContent = currentUser.name;
+            if (userRoleEl) userRoleEl.textContent = currentUser.role;
+            
+            // Add event listeners
+            if (!eventListenersAdded) {
+                addEventListeners();
+            }
             
             if (currentUser.role === 'employee') {
                 document.getElementById('employeeDashboard').classList.remove('hidden');
@@ -541,25 +780,31 @@
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 renderEmployeeTable();
             }
+
+            // Start real-time sync
+            cloudAPI.startRealTimeSync();
         }
 
         function updateEmployeeStatus() {
+            if (!currentUser || currentUser.role !== 'employee') return;
+            
             const today = new Date().toDateString();
             const todayRecords = attendanceRecords.filter(record => 
-                record.employeeId === currentUser.id && 
-                new Date(record.checkIn).toDateString() === today
+                record.employee_id === currentUser.id && 
+                new Date(record.check_in).toDateString() === today
             );
             
-            // Tìm ca đang làm việc (chưa kết thúc)
-            const activeSession = todayRecords.find(record => !record.checkOut);
+            const activeSession = todayRecords.find(record => !record.check_out);
             isWorking = !!activeSession;
             
             const statusElement = document.getElementById('workingStatus');
             const checkinButton = document.getElementById('checkinButton');
             const checkoutButton = document.getElementById('checkoutButton');
             
+            if (!statusElement || !checkinButton || !checkoutButton) return;
+            
             if (isWorking) {
-                const startTime = new Date(activeSession.checkIn).toLocaleTimeString('vi-VN', {
+                const startTime = new Date(activeSession.check_in).toLocaleTimeString('vi-VN', {
                     hour: '2-digit',
                     minute: '2-digit'
                 });
@@ -574,9 +819,9 @@
                 checkoutButton.className = 'w-full py-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors bg-red-500 text-white hover:bg-red-600';
                 checkoutButton.textContent = 'Kết Thúc Ca';
             } else {
-                const completedSessions = todayRecords.filter(record => record.checkOut).length;
+                const completedSessions = todayRecords.filter(record => record.check_out).length;
                 const totalHoursToday = todayRecords.reduce((total, record) => 
-                    total + calculateWorkingHours(record.checkIn, record.checkOut), 0
+                    total + calculateWorkingHours(record.check_in, record.check_out), 0
                 );
                 
                 if (completedSessions > 0) {
@@ -598,15 +843,16 @@
 
         function renderHistory() {
             const historyList = document.getElementById('historyList');
+            if (!historyList) return;
+            
             const records = getMonthlyRecords(currentUser.id);
             
             if (records.length === 0) {
                 historyList.innerHTML = '<div class="text-center py-8 text-gray-500">Không có dữ liệu chấm công trong tháng này</div>';
             } else {
-                // Nhóm records theo ngày
                 const recordsByDate = {};
                 records.forEach(record => {
-                    const dateKey = new Date(record.checkIn).toDateString();
+                    const dateKey = new Date(record.check_in).toDateString();
                     if (!recordsByDate[dateKey]) {
                         recordsByDate[dateKey] = [];
                     }
@@ -616,9 +862,9 @@
                 historyList.innerHTML = Object.keys(recordsByDate).map(dateKey => {
                     const dayRecords = recordsByDate[dateKey];
                     const totalHours = dayRecords.reduce((total, record) => 
-                        total + calculateWorkingHours(record.checkIn, record.checkOut), 0
+                        total + calculateWorkingHours(record.check_in, record.check_out), 0
                     );
-                    const dailySalary = totalHours * currentUser.hourlyRate;
+                    const dailySalary = totalHours * currentUser.hourly_rate;
 
                     return `
                         <div class="bg-gray-50 p-4 rounded-lg">
@@ -634,22 +880,22 @@
                             
                             <div class="space-y-2">
                                 ${dayRecords.map((record, index) => {
-                                    const sessionHours = calculateWorkingHours(record.checkIn, record.checkOut);
-                                    const sessionSalary = sessionHours * currentUser.hourlyRate;
+                                    const sessionHours = calculateWorkingHours(record.check_in, record.check_out);
+                                    const sessionSalary = sessionHours * currentUser.hourly_rate;
                                     
                                     return `
-                                        <div class="text-sm bg-white p-3 rounded border-l-4 ${record.checkOut ? 'border-green-400' : 'border-yellow-400'}">
+                                        <div class="text-sm bg-white p-3 rounded border-l-4 ${record.check_out ? 'border-green-400' : 'border-yellow-400'}">
                                             <div class="flex justify-between items-center mb-1">
                                                 <span class="font-medium text-gray-700">Ca ${index + 1}</span>
-                                                ${record.checkOut ? 
+                                                ${record.check_out ? 
                                                     `<span class="text-green-600 font-medium">${sessionHours.toFixed(1)}h - ${Math.round(sessionSalary).toLocaleString('vi-VN')} ₫</span>` :
                                                     `<span class="text-yellow-600 font-medium">Đang trong ca</span>`
                                                 }
                                             </div>
                                             <div class="text-gray-600">
-                                                <span>Bắt đầu: ${new Date(record.checkIn).toLocaleTimeString('vi-VN')}</span>
-                                                ${record.checkOut ? 
-                                                    `<span class="ml-4">Kết thúc: ${new Date(record.checkOut).toLocaleTimeString('vi-VN')}</span>` : 
+                                                <span>Bắt đầu: ${new Date(record.check_in).toLocaleTimeString('vi-VN')}</span>
+                                                ${record.check_out ? 
+                                                    `<span class="ml-4">Kết thúc: ${new Date(record.check_out).toLocaleTimeString('vi-VN')}</span>` : 
                                                     '<span class="ml-4 text-yellow-600">(Chưa kết thúc)</span>'
                                                 }
                                             </div>
@@ -662,17 +908,18 @@
                 }).join('');
             }
             
-            // Update salary info after rendering history
             updateEmployeeSalaryInfo();
         }
 
         function renderEmployeeTable() {
             const tbody = document.getElementById('employeeTableBody');
+            if (!tbody) return;
+            
             const employeeList = employees.filter(emp => emp.role === 'employee');
             
             tbody.innerHTML = employeeList.map(employee => {
                 const monthlyHours = getMonthlyRecords(employee.id).reduce((total, record) => 
-                    total + calculateWorkingHours(record.checkIn, record.checkOut), 0
+                    total + calculateWorkingHours(record.check_in, record.check_out), 0
                 );
                 
                 const monthlySalary = calculateMonthlySalary(employee);
@@ -697,13 +944,13 @@
                                 `<div class="flex gap-2">
                                     <input
                                         type="number"
-                                        value="${employee.hourlyRate}"
+                                        value="${employee.hourly_rate}"
                                         class="w-32 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                         onkeypress="handleSalaryEdit(event, ${employee.id})"
                                     />
                                     <button onclick="cancelEdit()" class="text-gray-500 hover:text-gray-700">✕</button>
                                 </div>` :
-                                `<span class="text-gray-800 font-medium">${employee.hourlyRate.toLocaleString('vi-VN')} ₫/h</span>`
+                                `<span class="text-gray-800 font-medium">${employee.hourly_rate.toLocaleString('vi-VN')} ₫/h</span>`
                             }
                         </td>
                         <td class="px-6 py-4">
@@ -716,21 +963,21 @@
                             <div class="flex gap-2">
                                 <button
                                     onclick="editEmployee(${employee.id})"
-                                    class="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors ${syncStatus === 'syncing' ? 'opacity-50 cursor-not-allowed' : ''}"
-                                    ${syncStatus === 'syncing' ? 'disabled' : ''}
+                                    class="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                                    title="Chỉnh sửa lương"
                                 >
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
                                 </button>
                                 <button
-                                    onclick="deleteEmployee(${employee.id})"
-                                    class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors ${syncStatus === 'syncing' ? 'opacity-50 cursor-not-allowed' : ''}"
-                                    ${syncStatus === 'syncing' ? 'disabled' : ''}
+                                    onclick="viewEmployeeDetails(${employee.id})"
+                                    class="text-purple-500 hover:text-purple-700 p-2 hover:bg-purple-50 rounded-lg transition-colors"
+                                    title="Xem chi tiết chấm công"
                                 >
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd" />
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
                                     </svg>
                                 </button>
                             </div>
@@ -742,8 +989,13 @@
 
         // Event handlers
         async function handleLogin() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const usernameField = document.getElementById('username');
+            const passwordField = document.getElementById('password');
+            
+            if (!usernameField || !passwordField) return;
+            
+            const username = usernameField.value;
+            const password = passwordField.value;
             
             if (!username || !password) {
                 alert('Vui lòng nhập đầy đủ thông tin!');
@@ -752,7 +1004,6 @@
 
             try {
                 updateSyncStatus('syncing');
-                await mockAPI.delay(300);
                 
                 const user = employees.find(emp => 
                     emp.username === username && emp.password === password
@@ -760,8 +1011,8 @@
                 
                 if (user) {
                     currentUser = user;
-                    document.getElementById('username').value = '';
-                    document.getElementById('password').value = '';
+                    usernameField.value = '';
+                    passwordField.value = '';
                     updateSyncStatus('synced');
                     showMainApp();
                 } else {
@@ -779,29 +1030,51 @@
             currentUser = null;
             isWorking = false;
             editingEmployee = null;
+            eventListenersAdded = false;
+            cloudAPI.stopRealTimeSync();
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
         }
 
         async function handleCheckin() {
+            if (syncStatus === 'syncing') return;
+            if (!currentUser || currentUser.role !== 'employee') return;
+            
+            const checkinBtn = document.getElementById('checkinButton');
+            if (checkinBtn && checkinBtn.disabled) return;
+            
             try {
                 updateSyncStatus('syncing');
                 const now = new Date();
+                
+                const activeSession = attendanceRecords.find(record => 
+                    record.employee_id === currentUser.id && !record.check_out
+                );
+                
+                if (activeSession) {
+                    alert('Bạn đang trong ca làm việc! Vui lòng kết thúc ca hiện tại trước.');
+                    updateSyncStatus('synced');
+                    return;
+                }
+                
                 const newRecord = {
-                    employeeId: currentUser.id,
-                    employeeName: currentUser.name,
-                    checkIn: now.toISOString(),
-                    checkOut: null,
-                    date: now.toDateString()
+                    employee_id: currentUser.id,
+                    employee_name: currentUser.name,
+                    check_in: now.toISOString(),
+                    check_out: null,
+                    date: now.toISOString().split('T')[0]
                 };
                 
-                const response = await mockAPI.addAttendanceRecord(newRecord);
+                const response = await cloudAPI.addAttendanceRecord(newRecord);
                 
                 if (response.success) {
                     attendanceRecords.push(response.data);
                     updateEmployeeStatus();
                     renderHistory();
                     updateSyncStatus('synced');
+                } else {
+                    updateSyncStatus('error');
+                    alert('Có lỗi xảy ra khi chấm công!');
                 }
             } catch (error) {
                 console.error('Check-in failed:', error);
@@ -810,27 +1083,41 @@
         }
 
         async function handleCheckout() {
+            if (syncStatus === 'syncing') return;
+            if (!currentUser || currentUser.role !== 'employee') return;
+            
+            const checkoutBtn = document.getElementById('checkoutButton');
+            if (checkoutBtn && checkoutBtn.disabled) return;
+            
             try {
                 updateSyncStatus('syncing');
                 const now = new Date();
                 
-                // Tìm record chưa checkout (đang active)
                 const recordToUpdate = attendanceRecords.find(record => 
-                    record.employeeId === currentUser.id && !record.checkOut
+                    record.employee_id === currentUser.id && !record.check_out
                 );
 
-                if (recordToUpdate) {
-                    const response = await mockAPI.updateAttendanceRecord(recordToUpdate.id, {
-                        checkOut: now.toISOString()
-                    });
+                if (!recordToUpdate) {
+                    alert('Không tìm thấy ca làm việc đang hoạt động!');
+                    updateSyncStatus('synced');
+                    return;
+                }
 
-                    if (response.success) {
-                        const index = attendanceRecords.findIndex(r => r.id === recordToUpdate.id);
-                        attendanceRecords[index] = response.data;
-                        updateEmployeeStatus();
-                        renderHistory();
-                        updateSyncStatus('synced');
+                const response = await cloudAPI.updateAttendanceRecord(recordToUpdate.id, {
+                    check_out: now.toISOString()
+                });
+
+                if (response.success) {
+                    const index = attendanceRecords.findIndex(r => r.id === recordToUpdate.id);
+                    if (index !== -1) {
+                        attendanceRecords[index] = { ...attendanceRecords[index], check_out: now.toISOString() };
                     }
+                    updateEmployeeStatus();
+                    renderHistory();
+                    updateSyncStatus('synced');
+                } else {
+                    updateSyncStatus('error');
+                    alert('Có lỗi xảy ra khi kết thúc ca!');
                 }
             } catch (error) {
                 console.error('Check-out failed:', error);
@@ -863,16 +1150,21 @@
 
                 try {
                     updateSyncStatus('syncing');
-                    const response = await mockAPI.updateEmployee(employeeId, { 
-                        hourlyRate: parseFloat(newSalary) 
+                    const response = await cloudAPI.updateEmployee(employeeId, { 
+                        hourly_rate: parseFloat(newSalary) 
                     });
                     
                     if (response.success) {
                         const index = employees.findIndex(emp => emp.id === employeeId);
-                        employees[index] = response.data;
+                        if (index !== -1) {
+                            employees[index].hourly_rate = parseFloat(newSalary);
+                        }
                         editingEmployee = null;
                         renderEmployeeTable();
                         updateSyncStatus('synced');
+                    } else {
+                        updateSyncStatus('error');
+                        alert('Có lỗi xảy ra khi cập nhật!');
                     }
                 } catch (error) {
                     console.error('Update salary failed:', error);
@@ -881,41 +1173,25 @@
             }
         }
 
-        async function deleteEmployee(employeeId) {
-            if (!confirm('Bạn có chắc muốn xóa nhân viên này?')) {
-                return;
-            }
-
-            try {
-                updateSyncStatus('syncing');
-                const response = await mockAPI.deleteEmployee(employeeId);
-                
-                if (response.success) {
-                    employees = employees.filter(emp => emp.id !== employeeId);
-                    attendanceRecords = attendanceRecords.filter(record => record.employeeId !== employeeId);
-                    renderEmployeeTable();
-                    updateSyncStatus('synced');
-                }
-            } catch (error) {
-                console.error('Delete employee failed:', error);
-                updateSyncStatus('error');
-            }
-        }
-
         function exportToExcel() {
             const data = employees.filter(emp => emp.role === 'employee').map(emp => {
                 const monthlyHours = getMonthlyRecords(emp.id).reduce((total, record) => 
-                    total + calculateWorkingHours(record.checkIn, record.checkOut), 0
+                    total + calculateWorkingHours(record.check_in, record.check_out), 0
                 );
                 const monthlySalary = calculateMonthlySalary(emp);
                 
                 return {
                     'Họ Tên': emp.name,
-                    'Lương/Giờ': emp.hourlyRate.toLocaleString('vi-VN'),
+                    'Lương/Giờ': emp.hourly_rate.toLocaleString('vi-VN'),
                     'Giờ Làm Tháng': monthlyHours.toFixed(1),
                     'Lương Thực Nhận': monthlySalary.toLocaleString('vi-VN')
                 };
             });
+            
+            if (data.length === 0) {
+                alert('Không có dữ liệu để xuất!');
+                return;
+            }
             
             const csvContent = [
                 Object.keys(data[0]).join(','),
@@ -931,51 +1207,329 @@
             document.body.removeChild(link);
         }
 
+        // Employee Detail Modal
+        function viewEmployeeDetails(employeeId) {
+            currentDetailEmployeeId = employeeId;
+            const employee = employees.find(emp => emp.id === employeeId);
+            if (!employee) return;
+
+            const modalTitle = document.getElementById('modalEmployeeName');
+            const modalMonthSelect = document.getElementById('modalMonthSelect');
+            const modalYearSelect = document.getElementById('modalYearSelect');
+            const modal = document.getElementById('employeeDetailModal');
+            
+            if (modalTitle) modalTitle.textContent = `Chi Tiết Chấm Công - ${employee.name}`;
+            if (modalMonthSelect) modalMonthSelect.value = selectedMonth;
+            if (modalYearSelect) modalYearSelect.value = selectedYear;
+            if (modal) modal.classList.remove('hidden');
+            
+            loadEmployeeDetail();
+        }
+
+        function closeEmployeeDetail() {
+            const modal = document.getElementById('employeeDetailModal');
+            if (modal) modal.classList.add('hidden');
+            currentDetailEmployeeId = null;
+        }
+
+        function loadEmployeeDetail() {
+            if (!currentDetailEmployeeId) return;
+            
+            const modalMonthSelect = document.getElementById('modalMonthSelect');
+            const modalYearSelect = document.getElementById('modalYearSelect');
+            
+            const modalMonth = modalMonthSelect ? parseInt(modalMonthSelect.value) : selectedMonth;
+            const modalYear = modalYearSelect ? parseInt(modalYearSelect.value) : selectedYear;
+            const employee = employees.find(emp => emp.id === currentDetailEmployeeId);
+            
+            if (!employee) return;
+
+            const employeeRecords = attendanceRecords.filter(record => {
+                const recordDate = new Date(record.check_in);
+                return record.employee_id === currentDetailEmployeeId && 
+                       recordDate.getMonth() + 1 === modalMonth && 
+                       recordDate.getFullYear() === modalYear;
+            });
+
+            const recordsByDate = {};
+            employeeRecords.forEach(record => {
+                const dateKey = new Date(record.check_in).toDateString();
+                if (!recordsByDate[dateKey]) {
+                    recordsByDate[dateKey] = [];
+                }
+                recordsByDate[dateKey].push(record);
+            });
+
+            const contentDiv = document.getElementById('employeeDetailContent');
+            if (!contentDiv) return;
+            
+            if (Object.keys(recordsByDate).length === 0) {
+                contentDiv.innerHTML = '<div class="text-center py-8 text-gray-500">Không có dữ liệu chấm công trong tháng này</div>';
+                return;
+            }
+
+            contentDiv.innerHTML = Object.keys(recordsByDate).map(dateKey => {
+                const dayRecords = recordsByDate[dateKey];
+                const totalHours = dayRecords.reduce((total, record) => 
+                    total + calculateWorkingHours(record.check_in, record.check_out), 0
+                );
+                const dailySalary = totalHours * employee.hourly_rate;
+
+                return `
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-medium text-gray-800">
+                                ${new Date(dateKey).toLocaleDateString('vi-VN')}
+                            </span>
+                            <div class="text-right">
+                                <div class="text-blue-600 font-medium">${totalHours.toFixed(1)}h</div>
+                                <div class="text-green-600 text-sm font-medium">${Math.round(dailySalary).toLocaleString('vi-VN')} ₫</div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            ${dayRecords.map((record, index) => {
+                                const sessionHours = calculateWorkingHours(record.check_in, record.check_out);
+                                const sessionSalary = sessionHours * employee.hourly_rate;
+                                
+                                return `
+                                    <div class="text-sm bg-white p-3 rounded border-l-4 ${record.check_out ? 'border-green-400' : 'border-yellow-400'}">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-medium text-gray-700">Ca ${index + 1}</span>
+                                            <div class="flex gap-2">
+                                                ${record.check_out ? 
+                                                    `<input 
+                                                        type="number" 
+                                                        step="0.1" 
+                                                        value="${sessionHours.toFixed(1)}" 
+                                                        class="w-20 px-2 py-1 border border-gray-300 rounded text-xs"
+                                                        onchange="updateRecordHours(${record.id}, this.value)"
+                                                    />
+                                                    <span class="text-xs text-gray-500">h</span>` :
+                                                    `<span class="text-yellow-600 font-medium">Đang trong ca</span>`
+                                                }
+                                                <button 
+                                                    onclick="deleteRecord(${record.id})" 
+                                                    class="text-red-500 hover:text-red-700 text-xs px-2 py-1 hover:bg-red-50 rounded"
+                                                    title="Xóa ca này"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="text-gray-600 text-xs">
+                                            <span>Bắt đầu: ${new Date(record.check_in).toLocaleTimeString('vi-VN')}</span>
+                                            ${record.check_out ? 
+                                                `<span class="ml-4">Kết thúc: ${new Date(record.check_out).toLocaleTimeString('vi-VN')}</span>` : 
+                                                '<span class="ml-4 text-yellow-600">(Chưa kết thúc)</span>'
+                                            }
+                                        </div>
+                                        ${record.check_out ? 
+                                            `<div class="text-green-600 text-xs mt-1">Lương ca: ${Math.round(sessionSalary).toLocaleString('vi-VN')} ₫</div>` : ''
+                                        }
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function updateRecordHours(recordId, newHours) {
+            if (!newHours || isNaN(newHours) || newHours < 0) {
+                alert('Vui lòng nhập số giờ hợp lệ!');
+                loadEmployeeDetail();
+                return;
+            }
+
+            try {
+                updateSyncStatus('syncing');
+                const record = attendanceRecords.find(r => r.id === recordId);
+                if (!record || !record.check_out) {
+                    alert('Không thể sửa ca đang làm việc!');
+                    updateSyncStatus('synced');
+                    return;
+                }
+
+                const checkInTime = new Date(record.check_in);
+                const newCheckOutTime = new Date(checkInTime.getTime() + (parseFloat(newHours) * 60 * 60 * 1000));
+
+                const response = await cloudAPI.updateAttendanceRecord(recordId, {
+                    check_out: newCheckOutTime.toISOString()
+                });
+
+                if (response.success) {
+                    const index = attendanceRecords.findIndex(r => r.id === recordId);
+                    if (index !== -1) {
+                        attendanceRecords[index].check_out = newCheckOutTime.toISOString();
+                    }
+                    loadEmployeeDetail();
+                    renderEmployeeTable();
+                    updateSyncStatus('synced');
+                } else {
+                    updateSyncStatus('error');
+                    alert('Có lỗi xảy ra khi cập nhật!');
+                }
+            } catch (error) {
+                console.error('Update record failed:', error);
+                updateSyncStatus('error');
+                alert('Có lỗi xảy ra khi cập nhật!');
+            }
+        }
+
+        async function deleteRecord(recordId) {
+            if (!confirm('Bạn có chắc muốn xóa ca làm việc này?')) {
+                return;
+            }
+
+            try {
+                updateSyncStatus('syncing');
+                const response = await cloudAPI.deleteAttendanceRecord(recordId);
+                
+                if (response.success) {
+                    attendanceRecords = attendanceRecords.filter(record => record.id !== recordId);
+                    loadEmployeeDetail();
+                    renderEmployeeTable();
+                    updateSyncStatus('synced');
+                } else {
+                    updateSyncStatus('error');
+                    alert('Có lỗi xảy ra khi xóa!');
+                }
+            } catch (error) {
+                console.error('Delete record failed:', error);
+                updateSyncStatus('error');
+                alert('Có lỗi xảy ra khi xóa!');
+            }
+        }
+
         // Event listeners
-        document.getElementById('loginButton').addEventListener('click', handleLogin);
-        document.getElementById('logoutButton').addEventListener('click', handleLogout);
-        document.getElementById('checkinButton').addEventListener('click', handleCheckin);
-        document.getElementById('checkoutButton').addEventListener('click', handleCheckout);
-        document.getElementById('exportButton').addEventListener('click', exportToExcel);
+        function addEventListeners() {
+            if (eventListenersAdded) return;
+            
+            const logoutBtn = document.getElementById('logoutButton');
+            const checkinBtn = document.getElementById('checkinButton');
+            const checkoutBtn = document.getElementById('checkoutButton');
+            const exportBtn = document.getElementById('exportButton');
 
-        // Month/Year change handlers
-        document.getElementById('monthSelect').addEventListener('change', (e) => {
-            selectedMonth = parseInt(e.target.value);
-            renderHistory();
-            if (currentUser && currentUser.role === 'employee') {
-                updateEmployeeSalaryInfo();
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+            if (checkinBtn) checkinBtn.addEventListener('click', handleCheckin);
+            if (checkoutBtn) checkoutBtn.addEventListener('click', handleCheckout);
+            if (exportBtn) exportBtn.addEventListener('click', exportToExcel);
+
+            const monthSelect = document.getElementById('monthSelect');
+            const yearSelect = document.getElementById('yearSelect');
+            const adminMonthSelect = document.getElementById('adminMonthSelect');
+            const adminYearSelect = document.getElementById('adminYearSelect');
+
+            if (monthSelect) {
+                monthSelect.addEventListener('change', (e) => {
+                    selectedMonth = parseInt(e.target.value);
+                    if (currentUser && currentUser.role === 'employee') {
+                        renderHistory();
+                        updateEmployeeSalaryInfo();
+                    }
+                });
             }
-        });
 
-        document.getElementById('yearSelect').addEventListener('change', (e) => {
-            selectedYear = parseInt(e.target.value);
-            renderHistory();
-            if (currentUser && currentUser.role === 'employee') {
-                updateEmployeeSalaryInfo();
+            if (yearSelect) {
+                yearSelect.addEventListener('change', (e) => {
+                    selectedYear = parseInt(e.target.value);
+                    if (currentUser && currentUser.role === 'employee') {
+                        renderHistory();
+                        updateEmployeeSalaryInfo();
+                    }
+                });
             }
-        });
 
-        document.getElementById('adminMonthSelect').addEventListener('change', (e) => {
-            selectedMonth = parseInt(e.target.value);
-            renderEmployeeTable();
-        });
-
-        document.getElementById('adminYearSelect').addEventListener('change', (e) => {
-            selectedYear = parseInt(e.target.value);
-            renderEmployeeTable();
-        });
-
-        // Enter key login
-        document.getElementById('password').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleLogin();
+            if (adminMonthSelect) {
+                adminMonthSelect.addEventListener('change', (e) => {
+                    selectedMonth = parseInt(e.target.value);
+                    if (currentUser && currentUser.role === 'admin') {
+                        renderEmployeeTable();
+                    }
+                });
             }
-        });
+
+            if (adminYearSelect) {
+                adminYearSelect.addEventListener('change', (e) => {
+                    selectedYear = parseInt(e.target.value);
+                    if (currentUser && currentUser.role === 'admin') {
+                        renderEmployeeTable();
+                    }
+                });
+            }
+
+            eventListenersAdded = true;
+        }
 
         // Start the app
         setInterval(updateTime, 1000);
         updateTime();
         initializeApp();
     </script>
+
+    <!-- 
+    ============================================
+    🔥 HƯỚNG DẪN SETUP DATABASE THẬT (Supabase)
+    ============================================
+    
+    🎯 BƯỚC 1: Tạo tài khoản Supabase
+    - Truy cập: https://supabase.com
+    - Đăng ký miễn phí
+    - Tạo project mới: "vta-attendance"
+    
+    🎯 BƯỚC 2: Lấy config
+    - Vào Settings → API  
+    - Copy "Project URL" và "anon public" key
+    - Thay vào 2 dòng đầu JavaScript ở trên
+    
+    🎯 BƯỚC 3: Tạo bảng
+    - Vào SQL Editor
+    - Paste và chạy script sau:
+
+    -- Tạo bảng employees
+    CREATE TABLE employees (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        username VARCHAR(100) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'employee',
+        hourly_rate DECIMAL(10,2) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW()
+    );
+
+    -- Tạo bảng attendance_records  
+    CREATE TABLE attendance_records (
+        id SERIAL PRIMARY KEY,
+        employee_id INTEGER REFERENCES employees(id) ON DELETE CASCADE,
+        employee_name VARCHAR(255) NOT NULL,
+        check_in TIMESTAMP NOT NULL,
+        check_out TIMESTAMP NULL,
+        date DATE NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+    );
+
+    -- Thêm dữ liệu demo
+    INSERT INTO employees (name, username, password, role, hourly_rate) VALUES
+    ('Nguyễn Văn A', 'admin', 'admin', 'admin', 100000),
+    ('Trần Thị B', 'nhanvien1', '123', 'employee', 50000),
+    ('Lê Văn C', 'nhanvien2', '123', 'employee', 45000),
+    ('Phạm Thị D', 'nhanvien3', '123', 'employee', 48000);
+
+    🎯 BƯỚC 4: Deploy
+    - Save file HTML này
+    - Deploy lên Vercel/Netlify  
+    - Chia sẻ link cho tất cả nhân viên
+    
+    🎯 KẾT QUẢ:
+    ✅ Tất cả thiết bị truy cập cùng 1 link
+    ✅ Dữ liệu đồng bộ thời gian thực
+    ✅ Không giới hạn số thiết bị
+    ✅ Admin quản lý từ xa
+    ✅ Miễn phí cho quán nhỏ (đến 500MB)
+    
+    📞 Cần hỗ trợ: Comment lại, tôi sẽ hướng dẫn chi tiết!
+    -->
 </body>
 </html>
